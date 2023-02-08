@@ -2,7 +2,7 @@ Package: ao3.scraper
 Title: AO3 Web Scraper in R
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "Pat",
+    person(given = "Kat",
            family = "Thompson",
            role = c("aut", "cre"),
            email = "patthomp.xyz@gmail.com")
