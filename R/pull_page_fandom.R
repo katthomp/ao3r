@@ -5,6 +5,3 @@ pull_page_fandom <- function(s, url){
     unique()
 }
 
-
-
-

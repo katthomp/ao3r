@@ -1,12 +1,11 @@
 library(beepr)
 
+devtools::load_all("~/coding/projects/ao3r")
 
-devtools::load_all("~/coding/projects/ao3.scraper")
+user <- Sys.getenv("USER")
+pw <- Sys.getenv("PW")
 
-Sys.setenv("USER" = "scifluff")
-Sys.setenv("PW" = "Dwstshpfan1")
-
-s <- login("scifluff", "Dwstshpfan1")
+s <- login(user, pw)
 
 url <- glue::glue("https://archiveofourown.org/users/{Sys.getenv('USER')}/readings")
 

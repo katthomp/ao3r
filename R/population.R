@@ -40,15 +40,28 @@ get_fandoms <- function(s, url, media) {
   })
 
   tags <- bind_cols(titles, sapply(urls, pull_page_fandom, s = s))
-
-
-
-
 }
+
+
+
+#' #' @name population
+#' #' @export
+#' get_fandoms <- function(s, url, media){
+#'   raw <- rvest::session_jump_to(s, url) |>
+#'     rvest::html_elements(xpath = '//*[contains(@class, "tags index group")]/li') |>
+#'     html_text() #parse every new line as n relating to the last
+#'   parsed <- purrr::compact(sapply(X = raw, FUN = function(i){
+#'     stringr::str_split(stringr::str_trim(i, side = "both"), pattern = "\\n")[1:2]
+#'   }))
+#'
+#'   fan_df <- data.table::data.table(title = sapply(parsed, `[[`, 1), total = sapply(parsed, `[[`, 2), media = rep_len(media, length(parsed)))
+#'   fan_df
+#' }
 
 #' @describeIn population start_fandom_pull
 #' @export
 start_fandom_pull <- function(s) {
+
   bk <- "https://archiveofourown.org/media/Books%20*a*%20Literature/fandoms"
   vid <- "https://archiveofourown.org/media/Video%20Games/fandoms"
   cartoon <- "https://archiveofourown.org/media/Cartoons%20*a*%20Comics%20*a*%20Graphic%20Novels/fandoms"
@@ -72,13 +85,14 @@ start_fandom_pull <- function(s) {
   stage_df <- get_fandoms(s, theater, media = "theater")
   pop_raw <- data.table::rbindlist(list(tv_df, rpf_df, vid_df, anime_df, movie_df, bk_df, toon_df, other_df, music_df, stage_df))
 
+
   pop_raw[, total := as.numeric(stringr::str_remove_all(total, "[:punct:]|[:space:]"))]
   pop_raw[, snapshot_utc := lubridate::now(tzone = "UTC")]
   pop_raw
 }
 
 #' @describeIn population Check whether url returns more than 5000 pages (100k works)
-test_for_fandom_size <- function(s, url) {
+test_for_fandom_size <- function(s, url){
   mx_pg <- get_max_page(s, url)
   ifelse(mx_pg > 5000, warning("Cannot accurately show results for entire search query"), TRUE)
 }
