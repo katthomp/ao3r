@@ -1,0 +1,125 @@
+---
+title: "Plan of Attack - Full specifications"
+format: html
+editor: visual
+execute:
+  eval: false
+---
+
+# Server:
+
+### Utils to be used by all parts of the package
+
+-   `login(username, password)` - Takes a username and password and outputs an rvest session Object
+
+-   `build_query_url(params)` - Builds a search query url to ao3 given list of params
+
+-   `save_api_response(r, filename)` - Stores response as a persistent data file, given data and a full path filename
+
+-   `extract_api_response(filename)` - Turns saved file into R object, checks for structure
+
+-   `extract_all_chapters(html_doc)` - Plucks chapter counts by fic, and saves if the fic is marked complete
+
+-   `extract_all_warnings(html_doc)` - Plucks warnings (Author Chose Not To Use Archive Warnings, Rape/Non-Con, Underage, Graphic Depictions of Violence, No Archive Warnings Apply, Major Character Death)
+
+-   `extract_all_characters(html_doc)` - Plucks characters
+
+-   `extract_all_categories(html_doc)` - Plucks categories (M/M, Other, F/F, F/M, Gen, Multi)
+
+-   `extract_all_fandoms(html_doc)` - Plucks fandoms
+
+-   `extract_all_pairings(html_doc)` - Plucks (&\|/) tags
+
+-   `extract_all_stats(html_doc)` - Plucks word count, comments, kudos, hits, bookmarks, language
+
+-   `extract_all_authors(html_doc)` - Plucks all authors
+
+-   `parse_text_page(html_doc)` - Parses a text string from html document and calls different functions to do this, ending with a data.frame with the following characteristics:
+
+    ``` sql
+      CREATE TABLE ao3_page_raw (
+          category text,
+          complete_flag boolean,
+          chapters integer,
+          title text,
+          fandom text,
+          characters text,
+          ships text,
+          warnings text,
+          word_count integer,
+          comments text,
+          kudos integer,
+          bookmarks integer,
+          hits integer,
+          language text,
+          author text,
+          summary text,
+          date_published text,
+          date_updated text,
+          snapshot_utc timestamp with time zone,
+          work_id text,
+          CONSTRAINT ao3_page_pkey PRIMARY KEY (work_id, snapshot_utc)
+        );
+    ```
+
+-   `stack_text_pages(df_list)` - Takes the return value of parse_text_page and stacks it on top of each other to aggregate, adding the column `page` to distinguish how far back in results the work was found.
+
+-   `export_df(data, filename, export_type)` - Outputs either json, a csv, or an .Rda
+
+-   `check_network()` - Is the internet connection stable? if not, proceed in offline mode
+
+### Must be able to read through a person's history and give general statistics around it
+
+-   Functions required:
+
+    -   `pull_history(user_session, page_start, page_end)` - Takes a user session returned from `login()` or a guest token, and a start/end page to paginate requests by
+
+-   Must be able to pull general information around a fandom
+
+    -   Functions required:
+
+        -   `archival_pull(page_start, page_end)` - Takes a starting and ending page for a web scrape
+        -   `fandom_global` - Special case of fandom_search above, where it loops through a specified fandom by the 8 combos of (rating, complete status) storing number of fics per tag
+        -   `generic_stats_pull(fandom_url)` -
+
+-   Must be able to pull website general information -- top fandoms by type for example?
+
+# Data processing / visualization:
+
+-   `summarize_pages(pages_df)` - Totals stats in DT example above and outputs a nice summary
+
+-   `top_n\_histogram(pages_df)` - Plots n different values and outputs their count into a histogram
+
+-   `chapter_plot(pages_df)` - Plots the proportion of Complete fics to In progress ones (as in a density plot with 2 different plots sharing an axis of chapter number), maybe have the fill color be some kind of cool color combo together (like red and yellow)
+
+-   `check_fandoms_by_type(user_session)` - Takes a user_session and pulls from each fandom_type by alphabetical letter/character, returns
+
+``` sql
+    CREATE TABLE fandom_page (
+      fandom_type text,
+      fandom text,
+      n integer,
+      snapshot_utc timestamp with time zone
+    );
+```
+
+-   `determine_top_n\_fandoms_by_stat(df, stat_to_compare)` - Takes an integer n and finds the top fandoms by a pre-specified stat
+
+    -   `top_n\_fandoms_by_fics(df)`
+    -   top_n_fandoms_by_bookmarks(df)
+    -   top_n_fandoms_by_wordcount(df)
+    -   top_n_fandoms_by_chapters(df)
+    -   top_n_fandoms_by_kudos(df)
+
+-   `compare_tags(tag1, tag2)` - Takes 2 tags / string patterns and returns counts of both
+
+# App:
+
+-   Save data in order to make things faster
+-   Able to view all plots described in the section above
+-   Must be an executable in its final form
+-   Offline mode (only loads data from memory)
+
+## Future work:
+
+-   update_database(conn, global_fandom_df) - Uploads df to database/bucket

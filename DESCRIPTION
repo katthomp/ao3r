@@ -1,0 +1,23 @@
+Package: ao3.scraper
+Title: AO3 Web Scraper in R
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Pat",
+           family = "Thompson",
+           role = c("aut", "cre"),
+           email = "patthomp.xyz@gmail.com")
+Description: Scrapes and parses archiveourown.org's webpages to create personal datasets.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Imports: 
+    rvest,
+    stringr,
+    data.table,
+    purrr,
+    lubridate,
+    readr
+Depends: 
+    R (>= 4.0)
