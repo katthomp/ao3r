@@ -36,7 +36,7 @@ execute:
 
 -   `parse_text_page(html_doc)` - Parses a text string from html document and calls different functions to do this, ending with a data.frame with the following characteristics:
 
-    ```sql
+    ``` sql
     CREATE TABLE ao3_page_raw (
       category text,
       complete_flag boolean,
@@ -94,7 +94,7 @@ execute:
 
 -   `check_fandoms_by_type(user_session)` - Takes a user_session and pulls from each fandom_type by alphabetical letter/character, returns
 
-```sql
+``` sql
     CREATE TABLE fandom_page (
       fandom_type text,
       fandom text,
