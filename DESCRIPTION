@@ -5,7 +5,7 @@ Authors@R:
     person(given = "Pat",
            family = "Thompson",
            role = c("aut", "cre"),
-           email = "patthomp.xyz@gmail.com")
+           email = "patjthomp.xyz@gmail.com")
 Description: Scrapes and parses archiveourown.org's webpages to create personal datasets.
 License: GPL (>= 3)
 Encoding: UTF-8
